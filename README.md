@@ -7,6 +7,8 @@ A prototype multi-tenant database for medical clinics and service businesses tha
 
 All data is fictional. Phone numbers use the 555-01xx range reserved for fiction.
 
+**Live demo:** https://isectai-admin-dashboard.vercel.app. Demo login passwords are shared separately. The hosted version runs on Vercel with a Supabase project built from the same migrations and seed data.
+
 For the reasoning behind the design, see [ARCHITECTURE.md](ARCHITECTURE.md). For how the project was built with Claude Code, see [AI_WORKFLOW.md](AI_WORKFLOW.md).
 
 ## Prerequisites

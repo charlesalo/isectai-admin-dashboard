@@ -1,5 +1,6 @@
 import { PhoneOff } from "lucide-react";
 import { OutcomeBadge } from "@/components/badges";
+import { CallOutcomes } from "@/components/call-outcomes";
 import { EmptyState } from "@/components/empty-state";
 import {
   Table,
@@ -45,12 +46,21 @@ export async function CallsTab({ org }: { org: Organization }) {
   // way the AI receptionist recognizes them.
   const nameByPhone = new Map(people.data.map((p) => [p.phone_e164, p.full_name]));
 
+  const since = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
+  const lastMonth = calls.data.filter((call) => new Date(call.started_at).getTime() >= since);
+
   if (calls.data.length === 0) {
     return <EmptyState icon={PhoneOff} title="No calls yet" description="Calls handled by the AI receptionist appear here." />;
   }
 
   return (
     <>
+      <div className="border-b px-4 py-4">
+        <p className="mb-3 text-sm font-medium">How calls ended · last 30 days</p>
+        <div className="max-w-xl">
+          <CallOutcomes calls={lastMonth} />
+        </div>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>

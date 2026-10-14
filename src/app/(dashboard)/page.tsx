@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { CalendarClock } from "lucide-react";
 import { BookedViaBadge, IndustryBadge, StatusBadge } from "@/components/badges";
+import { CallOutcomes } from "@/components/call-outcomes";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { SectionLabel } from "@/components/section-label";
@@ -32,7 +33,7 @@ async function Overview() {
 
   // Each business has its own "today", so fetch a window around now and
   // filter by local date below.
-  const [overview, organizations, bookings] = await Promise.all([
+  const [overview, organizations, bookings, recentCalls] = await Promise.all([
     supabase.schema("core").from("organization_overview").select("*").order("name"),
     supabase.schema("core").from("organizations").select("id, name, slug, industry, timezone"),
     supabase
@@ -42,10 +43,17 @@ async function Overview() {
       .gte("scheduled_start", new Date(now.getTime() - day).toISOString())
       .lt("scheduled_start", new Date(now.getTime() + day).toISOString())
       .order("scheduled_start"),
+    supabase
+      .schema("core")
+      .from("calls")
+      .select("id, outcome, started_at")
+      .gte("started_at", new Date(now.getTime() - 30 * day).toISOString())
+      .order("started_at", { ascending: false }),
   ]);
   if (overview.error) throw overview.error;
   if (organizations.error) throw organizations.error;
   if (bookings.error) throw bookings.error;
+  if (recentCalls.error) throw recentCalls.error;
 
   const rows = overview.data;
   const orgById = new Map(organizations.data.map((org) => [org.id, org]));
@@ -91,72 +99,81 @@ async function Overview() {
         </div>
       </section>
 
-      <div className="grid gap-8 2xl:grid-cols-3 2xl:gap-6">
-        <section className="2xl:col-span-2">
-          <SectionLabel>Today</SectionLabel>
+      <section>
+        <SectionLabel>Today</SectionLabel>
+        <Card>
+          <CardHeader>
+            <CardTitle>{user.isPlatformAdmin ? "Across all businesses" : "Your bookings"}</CardTitle>
+            <CardDescription>
+              {user.isPlatformAdmin
+                ? "Appointments and job visits, in each business's local time."
+                : "Appointments and visits for today, in local time."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-0">
+            {today.length === 0 ? (
+              <EmptyState
+                icon={CalendarClock}
+                title="Nothing booked today"
+                description="Bookings for today will show up here as they come in."
+              />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="pl-4">Time</TableHead>
+                    <TableHead>Business</TableHead>
+                    <TableHead>Booking</TableHead>
+                    <TableHead className="pr-4">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {today.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell className="pl-4 whitespace-nowrap tabular-nums">
+                        {formatTime(booking.scheduled_start!, booking.org.timezone)}
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/businesses/${booking.org.slug}`}
+                          className="font-medium hover:underline"
+                        >
+                          {booking.org.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <p>{booking.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {booking.contact_name} · {booking.assigned_to}
+                        </p>
+                      </TableCell>
+                      <TableCell className="pr-4">
+                        <div className="flex flex-wrap gap-1.5">
+                          <StatusBadge status={booking.status!} />
+                          <BookedViaBadge bookedVia={booking.booked_via!} />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </section>
+
+      <section>
+        <SectionLabel>AI receptionist</SectionLabel>
+        <div className="grid gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>{user.isPlatformAdmin ? "Across all businesses" : "Your bookings"}</CardTitle>
-              <CardDescription>
-                {user.isPlatformAdmin
-                  ? "Appointments and job visits, in each business's local time."
-                  : "Appointments and visits for today, in local time."}
-              </CardDescription>
+              <CardTitle>How calls ended</CardTitle>
+              <CardDescription>All AI receptionist calls in the last 30 days.</CardDescription>
             </CardHeader>
-            <CardContent className="px-0">
-              {today.length === 0 ? (
-                <EmptyState
-                  icon={CalendarClock}
-                  title="Nothing booked today"
-                  description="Bookings for today will show up here as they come in."
-                />
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="pl-4">Time</TableHead>
-                      <TableHead>Business</TableHead>
-                      <TableHead>Booking</TableHead>
-                      <TableHead className="pr-4">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {today.map((booking) => (
-                      <TableRow key={booking.id}>
-                        <TableCell className="pl-4 whitespace-nowrap tabular-nums">
-                          {formatTime(booking.scheduled_start!, booking.org.timezone)}
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            href={`/businesses/${booking.org.slug}`}
-                            className="font-medium hover:underline"
-                          >
-                            {booking.org.name}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <p>{booking.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {booking.contact_name} · {booking.assigned_to}
-                          </p>
-                        </TableCell>
-                        <TableCell className="pr-4">
-                          <div className="flex flex-wrap gap-1.5">
-                            <StatusBadge status={booking.status!} />
-                            <BookedViaBadge bookedVia={booking.booked_via!} />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+            <CardContent>
+              <CallOutcomes calls={recentCalls.data} />
             </CardContent>
           </Card>
-        </section>
-
-        <section>
-          <SectionLabel>AI receptionist</SectionLabel>
           <Card>
             <CardHeader>
               <CardTitle>Impact by business</CardTitle>
@@ -164,7 +181,7 @@ async function Overview() {
                 Share of bookings made by AI calls, and missed calls this week.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-5 md:grid-cols-3 md:gap-8 2xl:grid-cols-1 2xl:gap-5">
+            <CardContent className="grid gap-5">
               {rows.length === 0 && <EmptyState title="No businesses yet" />}
               {rows.map((row) => (
                 <div key={row.organization_id} className="grid gap-1.5">
@@ -193,8 +210,8 @@ async function Overview() {
               ))}
             </CardContent>
           </Card>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -207,9 +224,10 @@ function OverviewSkeleton() {
           <Skeleton key={i} className="h-28 rounded-xl" />
         ))}
       </div>
-      <div className="grid gap-6 2xl:grid-cols-3">
-        <Skeleton className="h-96 rounded-xl 2xl:col-span-2" />
-        <Skeleton className="h-96 rounded-xl" />
+      <Skeleton className="h-80 rounded-xl" />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Skeleton className="h-72 rounded-xl" />
+        <Skeleton className="h-72 rounded-xl" />
       </div>
     </div>
   );

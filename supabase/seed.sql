@@ -11,14 +11,15 @@
 
 -- Organizations
 
-insert into core.organizations (name, slug, industry, timezone, phone_e164, address, city, state, status, plan)
+-- created_at is backdated so each business has a realistic signup date.
+insert into core.organizations (name, slug, industry, timezone, phone_e164, address, city, state, status, plan, created_at)
 values
   ('Brightside Family Clinic', 'brightside-family-clinic', 'medical', 'America/New_York',
-   '+12125550100', '418 Hudson Lane, Suite 2', 'New York', 'NY', 'active', 'growth'),
+   '+12125550100', '418 Hudson Lane, Suite 2', 'New York', 'NY', 'active', 'growth', now() - interval '14 months'),
   ('Lakeview Dental Care', 'lakeview-dental-care', 'medical', 'America/Chicago',
-   '+13125550140', '2750 Lakeshore Terrace', 'Chicago', 'IL', 'active', 'starter'),
+   '+13125550140', '2750 Lakeshore Terrace', 'Chicago', 'IL', 'active', 'starter', now() - interval '5 months'),
   ('Summit Air Heating & Cooling', 'summit-air-heating-cooling', 'field_service', 'America/Denver',
-   '+17205550170', '1600 Foothill Commerce Pkwy', 'Denver', 'CO', 'onboarding', 'trial');
+   '+17205550170', '1600 Foothill Commerce Pkwy', 'Denver', 'CO', 'onboarding', 'trial', now() - interval '3 weeks');
 
 -- Medical: providers
 

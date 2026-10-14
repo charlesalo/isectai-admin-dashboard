@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { IndustryBadge, OrgStatusBadge } from "@/components/badges";
 import { FilterPills } from "@/components/filter-pills";
+import { SectionLabel } from "@/components/section-label";
 import { StatCard } from "@/components/stat-card";
 import { TableSkeleton } from "@/components/table-skeleton";
 import { Card, CardContent } from "@/components/ui/card";
@@ -105,43 +106,47 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-4">
-        <Card className="lg:col-span-1">
-          <CardContent>
-            <dl className="grid gap-3 text-sm">
-              <InfoRow label="Phone">{org.phone_e164 ? formatPhone(org.phone_e164) : "—"}</InfoRow>
-              <InfoRow label="Address">
-                {org.address ? `${org.address}, ${org.city}, ${org.state}` : "—"}
-              </InfoRow>
-              <InfoRow label="Time zone">{org.timezone}</InfoRow>
-              <InfoRow label="Plan">
-                <span className="capitalize">{org.plan}</span>
-              </InfoRow>
-              <InfoRow label="Customer since">{formatDate(org.created_at)}</InfoRow>
-            </dl>
-          </CardContent>
-        </Card>
-        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
-          <StatCard label={labels.contacts} value={overview?.contacts ?? 0} />
-          <StatCard
-            label={`Upcoming ${labels.bookings.toLowerCase()}`}
-            value={overview?.upcoming_bookings_7d ?? 0}
-            detail="Next 7 days, excluding cancelled"
-          />
-          <StatCard
-            label="Calls this week"
-            value={overview?.calls_7d ?? 0}
-            detail={`${overview?.missed_calls_7d ?? 0} missed`}
-          />
-          <StatCard
-            label="Booked by AI receptionist"
-            value={formatPercent(overview?.ai_booked_pct ?? null)}
-            detail={`${overview?.ai_bookings ?? 0} of ${overview?.total_bookings ?? 0} bookings`}
-          />
+      <section>
+        <SectionLabel>At a glance</SectionLabel>
+        <div className="grid gap-4 lg:grid-cols-4">
+          <Card className="lg:col-span-1">
+            <CardContent>
+              <dl className="grid gap-3 text-sm">
+                <InfoRow label="Phone">{org.phone_e164 ? formatPhone(org.phone_e164) : "—"}</InfoRow>
+                <InfoRow label="Address">
+                  {org.address ? `${org.address}, ${org.city}, ${org.state}` : "—"}
+                </InfoRow>
+                <InfoRow label="Time zone">{org.timezone}</InfoRow>
+                <InfoRow label="Plan">
+                  <span className="capitalize">{org.plan}</span>
+                </InfoRow>
+                <InfoRow label="Customer since">{formatDate(org.created_at)}</InfoRow>
+              </dl>
+            </CardContent>
+          </Card>
+          <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+            <StatCard label={labels.contacts} value={overview?.contacts ?? 0} />
+            <StatCard
+              label={`Upcoming ${labels.bookings.toLowerCase()}`}
+              value={overview?.upcoming_bookings_7d ?? 0}
+              detail="Next 7 days, excluding cancelled"
+            />
+            <StatCard
+              label="Calls this week"
+              value={overview?.calls_7d ?? 0}
+              detail={`${overview?.missed_calls_7d ?? 0} missed`}
+            />
+            <StatCard
+              label="Booked by AI receptionist"
+              value={formatPercent(overview?.ai_booked_pct ?? null)}
+              detail={`${overview?.ai_bookings ?? 0} of ${overview?.total_bookings ?? 0} bookings`}
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div>
+      <section>
+        <SectionLabel>Records</SectionLabel>
         <nav className="mb-4 flex gap-1 border-b" aria-label="Business sections">
           {tabs.map((t) => (
             <Link
@@ -184,11 +189,7 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
           <Suspense key={`${tab}-${status}-${when}`} fallback={<TableSkeleton />}>
             {tab === "bookings" &&
               (isMedical ? (
-                <AppointmentsTab
-                  org={org}
-                  status={pick(status, appointmentStatuses)}
-                  when={when}
-                />
+                <AppointmentsTab org={org} status={pick(status, appointmentStatuses)} when={when} />
               ) : (
                 <JobsTab org={org} status={pick(status, jobStatuses)} when={when} />
               ))}
@@ -197,7 +198,7 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
             {tab === "activity" && <ActivityTab org={org} />}
           </Suspense>
         </Card>
-      </div>
+      </section>
     </div>
   );
 }

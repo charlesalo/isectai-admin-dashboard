@@ -20,12 +20,12 @@ export function CallOutcomes({ calls }: { calls: { outcome: string }[] }) {
   const count = (value: string) => calls.filter((call) => call.outcome === value).length;
 
   return (
-    <ul className="grid gap-3.5">
+    <ul className="grid grid-cols-1 gap-3.5">
       {outcomes.map((outcome) => {
         const n = count(outcome.value);
         const pct = Math.round((100 * n) / total);
         return (
-          <li key={outcome.value} className="grid gap-1.5">
+          <li key={outcome.value} className="grid grid-cols-1 gap-1.5">
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span>{outcome.label}</span>
               <span className="tabular-nums">

@@ -109,7 +109,7 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
   };
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <div>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">{org.name}</h1>
@@ -123,10 +123,10 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
 
       <section>
         <SectionLabel>At a glance</SectionLabel>
-        <div className="grid gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
           <Card className="lg:col-span-1">
             <CardContent>
-              <dl className="grid gap-3 text-sm">
+              <dl className="grid grid-cols-1 gap-3 text-sm">
                 <InfoRow label="Phone">{org.phone_e164 ? formatPhone(org.phone_e164) : "—"}</InfoRow>
                 <InfoRow label="Address">
                   {org.address ? `${org.address}, ${org.city}, ${org.state}` : "—"}
@@ -139,7 +139,7 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
               </dl>
             </CardContent>
           </Card>
-          <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-3">
             <StatCard label={labels.contacts} value={overview?.contacts ?? 0} />
             <StatCard
               label={`Upcoming ${labels.bookings.toLowerCase()}`}
@@ -182,7 +182,7 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
 
         <Card className="gap-0 py-0">
           {tab === "bookings" && (
-            <div className="grid gap-2 border-b px-4 py-3">
+            <div className="grid grid-cols-1 gap-2 border-b px-4 py-3">
               <FilterPills
                 label="Status"
                 options={[undefined, ...statuses].map((s) => ({
@@ -230,11 +230,11 @@ function InfoRow({ label, children }: { label: string; children: React.ReactNode
 
 function DetailSkeleton() {
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <Skeleton className="h-12 w-80" />
-      <div className="grid gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         <Skeleton className="h-64 rounded-xl" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-3">
           {Array.from({ length: 4 }, (_, i) => (
             <Skeleton key={i} className="h-28 rounded-xl" />
           ))}

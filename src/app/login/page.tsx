@@ -31,7 +31,7 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             {demoEnabled ? (
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <DemoLogin />
                 <details className="group rounded-lg border">
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground [&::-webkit-details-marker]:hidden">

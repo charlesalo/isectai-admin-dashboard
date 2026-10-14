@@ -76,7 +76,7 @@ export default function HowItsBuiltPage() {
     <>
       <PageHeader title="How it's built" description="How the data is organized and how each business stays separate." />
 
-      <div className="grid gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <div className="max-w-3xl space-y-3">
           <p className="text-base leading-relaxed">
             One database serves medical clinics and service businesses. Shared data lives in a{" "}
@@ -91,15 +91,15 @@ export default function HowItsBuiltPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Request path</CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="grid gap-1">
+              <ol className="grid grid-cols-1 gap-1">
                 {requestPath.map((step, i) => (
-                  <li key={step.title} className="grid gap-1">
+                  <li key={step.title} className="grid grid-cols-1 gap-1">
                     <div
                       className={cn(
                         "rounded-lg border bg-muted/30 px-4 py-3",
@@ -142,7 +142,7 @@ export default function HowItsBuiltPage() {
           </Card>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Two kinds of users</CardTitle>
@@ -177,7 +177,7 @@ export default function HowItsBuiltPage() {
               <CardTitle>Proven by tests</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="grid gap-3">
+              <ul className="grid grid-cols-1 gap-3">
                 {tests.map((test) => (
                   <li key={test.file} className="flex gap-3">
                     <span className="w-8 shrink-0 text-right text-lg font-semibold tabular-nums">{test.count}</span>
@@ -197,15 +197,15 @@ export default function HowItsBuiltPage() {
           </Card>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Schemas</CardTitle>
             </CardHeader>
             <CardContent>
-              <dl className="grid gap-3">
+              <dl className="grid grid-cols-1 gap-3">
                 {schemas.map((schema) => (
-                  <div key={schema.name} className="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-3">
+                  <div key={schema.name} className="grid grid-cols-1 gap-1 sm:grid-cols-[8rem_1fr] sm:gap-3">
                     <dt>
                       <code className="font-mono text-sm font-medium">{schema.name}</code>
                     </dt>

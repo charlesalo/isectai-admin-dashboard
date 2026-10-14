@@ -113,10 +113,10 @@ async function Overview() {
   }));
 
   return (
-    <div className="grid gap-8">
+    <div className="grid grid-cols-1 gap-8">
       <section>
         <SectionLabel>At a glance</SectionLabel>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Businesses"
             value={rows.length}
@@ -142,7 +142,7 @@ async function Overview() {
         </div>
       </section>
 
-      <div className="grid gap-8 2xl:grid-cols-3 2xl:gap-6">
+      <div className="grid grid-cols-1 gap-8 2xl:grid-cols-3 2xl:gap-6">
         <section className="2xl:col-span-2">
           <SectionLabel>Today</SectionLabel>
           <Card>
@@ -222,7 +222,7 @@ async function Overview() {
 
       <section>
         <SectionLabel>AI receptionist</SectionLabel>
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>How calls ended</CardTitle>
@@ -239,10 +239,10 @@ async function Overview() {
                 Share of bookings made by AI calls, and missed calls this week.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-5">
+            <CardContent className="grid grid-cols-1 gap-5">
               {rows.length === 0 && <EmptyState title="No businesses yet" />}
               {rows.map((row) => (
-                <div key={row.organization_id} className="grid gap-1.5">
+                <div key={row.organization_id} className="grid grid-cols-1 gap-1.5">
                   <div className="flex items-center justify-between gap-2">
                     <Link
                       href={`/businesses/${row.slug}`}
@@ -276,17 +276,17 @@ async function Overview() {
 
 function OverviewSkeleton() {
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (
           <Skeleton key={i} className="h-28 rounded-xl" />
         ))}
       </div>
-      <div className="grid gap-6 2xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 2xl:grid-cols-3">
         <Skeleton className="h-96 rounded-xl 2xl:col-span-2" />
         <Skeleton className="h-96 rounded-xl" />
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Skeleton className="h-72 rounded-xl" />
         <Skeleton className="h-72 rounded-xl" />
       </div>

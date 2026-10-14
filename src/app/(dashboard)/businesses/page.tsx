@@ -66,7 +66,7 @@ async function BusinessList({ searchParams }: Pick<PageProps<"/businesses">, "se
   };
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex rounded-lg border bg-muted/40 p-0.5">
           {industries.map((option) => (
@@ -172,7 +172,7 @@ async function BusinessList({ searchParams }: Pick<PageProps<"/businesses">, "se
 
 function ListSkeleton() {
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 gap-4">
       <div className="flex justify-between gap-3">
         <Skeleton className="h-9 w-64" />
         <Skeleton className="h-9 w-72" />

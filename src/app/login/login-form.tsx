@@ -10,8 +10,8 @@ export function LoginForm() {
   const [state, formAction, pending] = useActionState<LoginState, FormData>(signIn, {});
 
   return (
-    <form action={formAction} className="grid gap-4">
-      <div className="grid gap-2">
+    <form action={formAction} className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
@@ -22,7 +22,7 @@ export function LoginForm() {
           required
         />
       </div>
-      <div className="grid gap-2">
+      <div className="grid grid-cols-1 gap-2">
         <Label htmlFor="password">Password</Label>
         <Input id="password" name="password" type="password" autoComplete="current-password" required />
       </div>

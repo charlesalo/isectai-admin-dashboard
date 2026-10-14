@@ -21,7 +21,7 @@ export function DemoLogin() {
   const [state, formAction, pending] = useActionState<LoginState, FormData>(signInAsDemo, {});
 
   return (
-    <form action={formAction} className="grid gap-3">
+    <form action={formAction} className="grid grid-cols-1 gap-3">
       {options.map((option) => (
         <button
           key={option.role}

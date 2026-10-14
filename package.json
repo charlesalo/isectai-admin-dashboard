@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:users": "tsx --env-file=.env.local scripts/seed-users.ts",
+    "db:reset": "supabase db reset && npm run seed:users"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -30,6 +32,7 @@
     "eslint-config-next": "16.4.0",
     "supabase": "^2.120.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

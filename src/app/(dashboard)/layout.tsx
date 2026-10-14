@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { MainNav, NavLinks } from "@/components/main-nav";
+import { SiteFooter } from "@/components/site-footer";
 import { UserMenu } from "@/components/user-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -45,6 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
         <main className="flex-1 px-4 py-6 md:px-8">{children}</main>
+        <SiteFooter className="mx-4 border-t py-5 md:mx-8" />
       </div>
     </div>
   );

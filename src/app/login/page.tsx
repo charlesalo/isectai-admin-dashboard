@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ChevronRight } from "lucide-react";
+import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DemoLogin } from "./demo-login";
 import { LoginForm } from "./login-form";
@@ -47,9 +48,7 @@ export default function LoginPage() {
             )}
           </CardContent>
         </Card>
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Internal tool. Access is limited to iSectAI staff and the businesses they manage.
-        </p>
+        <SiteFooter className="mt-6 text-center" />
       </div>
     </main>
   );

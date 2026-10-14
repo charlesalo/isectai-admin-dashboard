@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate, formatPercent, formatPhone } from "@/lib/format";
 import { industryLabels } from "@/lib/labels";
 import { createClient } from "@/lib/supabase/server";
+import { weekOverWeek } from "@/lib/trends";
 import { cn } from "@/lib/utils";
 import {
   AppointmentsTab,
@@ -69,6 +70,20 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
   const org = orgResult.data;
   if (!org) notFound();
   const overview = overviewResult.data;
+
+  // Last 14 days of calls, for the week-over-week trend on "Calls this week".
+  const now = new Date();
+  const { data: recentCalls, error: callsError } = await supabase
+    .schema("core")
+    .from("calls")
+    .select("started_at")
+    .eq("organization_id", org.id)
+    .gte("started_at", new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString());
+  if (callsError) throw callsError;
+  const callTrend = weekOverWeek(
+    recentCalls.map((c) => c.started_at),
+    now,
+  );
 
   const labels = industryLabels(org.industry);
   const isMedical = org.industry === "medical";
@@ -133,7 +148,8 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
             />
             <StatCard
               label="Calls this week"
-              value={overview?.calls_7d ?? 0}
+              value={callTrend.current}
+              trend={callTrend}
               detail={`${overview?.missed_calls_7d ?? 0} missed`}
             />
             <StatCard

@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatPercent, formatTime, localDateKey } from "@/lib/format";
 import { getCurrentUser } from "@/lib/auth";
+import { weekOverWeek } from "@/lib/trends";
 import { createClient } from "@/lib/supabase/server";
 
 export default function OverviewPage() {
@@ -60,8 +61,13 @@ async function Overview() {
   const sum = (pick: (row: (typeof rows)[number]) => number | null) =>
     rows.reduce((total, row) => total + (pick(row) ?? 0), 0);
 
-  const calls = sum((r) => r.calls_7d);
-  const missed = sum((r) => r.missed_calls_7d);
+  // Week-over-week trends come from the last 30 days of calls, already fetched.
+  const startedAt = (outcome?: string) =>
+    recentCalls.data.filter((c) => !outcome || c.outcome === outcome).map((c) => c.started_at);
+  const callTrend = weekOverWeek(startedAt(), now);
+  const aiBookedTrend = weekOverWeek(startedAt("booked"), now);
+  const missed = weekOverWeek(startedAt("missed"), now).current;
+
   const totalBookings = sum((r) => r.total_bookings);
   const aiBookings = sum((r) => r.ai_bookings);
   const aiShare = totalBookings ? (100 * aiBookings) / totalBookings : null;
@@ -85,16 +91,22 @@ async function Overview() {
             value={rows.length}
             detail={`${active} active, ${rows.length - active} onboarding or paused`}
           />
-          <StatCard label="Calls this week" value={calls} detail={`${missed} missed in the last 7 days`} />
+          <StatCard
+            label="Calls this week"
+            value={callTrend.current}
+            trend={callTrend}
+            detail={`${missed} missed in the last 7 days`}
+          />
+          <StatCard
+            label="Booked by AI this week"
+            value={aiBookedTrend.current}
+            trend={aiBookedTrend}
+            detail={`${formatPercent(aiShare)} of all bookings (${aiBookings} of ${totalBookings})`}
+          />
           <StatCard
             label="Upcoming bookings"
             value={sum((r) => r.upcoming_bookings_7d)}
             detail="Next 7 days, excluding cancelled"
-          />
-          <StatCard
-            label="Booked by AI receptionist"
-            value={formatPercent(aiShare)}
-            detail={`${aiBookings} of ${totalBookings} bookings`}
           />
         </div>
       </section>

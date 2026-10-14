@@ -21,11 +21,13 @@ import {
   whenOptions,
   type When,
 } from "./bookings-tab";
+import { ActivityTab } from "./activity-tab";
+import { CallsTab } from "./calls-tab";
 import { CustomersTab, PatientsTab } from "./contacts-tab";
 
 export const metadata: Metadata = { title: "Business" };
 
-const tabs = ["bookings", "contacts"] as const;
+const tabs = ["bookings", "contacts", "calls", "activity"] as const;
 type Tab = (typeof tabs)[number];
 
 const whenLabels: Record<When, string> = { all: "All", today: "Today", upcoming: "Upcoming", past: "Past" };
@@ -83,7 +85,12 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
     return qs ? `/businesses/${slug}?${qs}` : `/businesses/${slug}`;
   };
 
-  const tabLabels: Record<Tab, string> = { bookings: labels.bookings, contacts: labels.contacts };
+  const tabLabels: Record<Tab, string> = {
+    bookings: labels.bookings,
+    contacts: labels.contacts,
+    calls: "Calls",
+    activity: "Activity",
+  };
 
   return (
     <div className="grid gap-6">
@@ -186,6 +193,8 @@ async function BusinessDetail({ params, searchParams }: PageProps<"/businesses/[
                 <JobsTab org={org} status={pick(status, jobStatuses)} when={when} />
               ))}
             {tab === "contacts" && (isMedical ? <PatientsTab org={org} /> : <CustomersTab org={org} />)}
+            {tab === "calls" && <CallsTab org={org} />}
+            {tab === "activity" && <ActivityTab org={org} />}
           </Suspense>
         </Card>
       </div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CalendarClock } from "lucide-react";
 import { BookedViaBadge, IndustryBadge, StatusBadge } from "@/components/badges";
 import { CallOutcomes } from "@/components/call-outcomes";
+import { LatestCalls } from "@/components/latest-calls";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { SectionLabel } from "@/components/section-label";
@@ -47,7 +48,7 @@ async function Overview() {
     supabase
       .schema("core")
       .from("calls")
-      .select("id, outcome, started_at")
+      .select("id, outcome, started_at, from_number, organization_id")
       .gte("started_at", new Date(now.getTime() - 30 * day).toISOString())
       .order("started_at", { ascending: false }),
   ]);
@@ -81,6 +82,36 @@ async function Overview() {
     return [{ ...booking, org }];
   });
 
+  // The newest calls, with each caller matched to a patient or customer of
+  // that business by phone number, the way the AI receptionist recognizes them.
+  const latest = recentCalls.data.slice(0, 8);
+  const phones = [...new Set(latest.map((c) => c.from_number))];
+  const [patients, customers] = await Promise.all([
+    supabase
+      .schema("medical")
+      .from("patients")
+      .select("organization_id, phone_e164, full_name")
+      .in("phone_e164", phones),
+    supabase
+      .schema("field_service")
+      .from("customers")
+      .select("organization_id, phone_e164, full_name")
+      .in("phone_e164", phones),
+  ]);
+  if (patients.error) throw patients.error;
+  if (customers.error) throw customers.error;
+  const nameByCaller = new Map(
+    [...patients.data, ...customers.data].map((p) => [`${p.organization_id}:${p.phone_e164}`, p.full_name]),
+  );
+  const latestCalls = latest.map((call) => ({
+    id: call.id,
+    callerName: nameByCaller.get(`${call.organization_id}:${call.from_number}`) ?? null,
+    fromNumber: call.from_number,
+    outcome: call.outcome,
+    startedAt: call.started_at,
+    business: orgById.get(call.organization_id),
+  }));
+
   return (
     <div className="grid gap-8">
       <section>
@@ -111,68 +142,83 @@ async function Overview() {
         </div>
       </section>
 
-      <section>
-        <SectionLabel>Today</SectionLabel>
-        <Card>
-          <CardHeader>
-            <CardTitle>{user.isPlatformAdmin ? "Across all businesses" : "Your bookings"}</CardTitle>
-            <CardDescription>
-              {user.isPlatformAdmin
-                ? "Appointments and job visits, in each business's local time."
-                : "Appointments and visits for today, in local time."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-0">
-            {today.length === 0 ? (
-              <EmptyState
-                icon={CalendarClock}
-                title="Nothing booked today"
-                description="Bookings for today will show up here as they come in."
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="pl-4">Time</TableHead>
-                    <TableHead>Business</TableHead>
-                    <TableHead>Booking</TableHead>
-                    <TableHead className="pr-4">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {today.map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell className="pl-4 whitespace-nowrap tabular-nums">
-                        {formatTime(booking.scheduled_start!, booking.org.timezone)}
-                      </TableCell>
-                      <TableCell>
-                        <Link
-                          href={`/businesses/${booking.org.slug}`}
-                          className="font-medium hover:underline"
-                        >
-                          {booking.org.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <p>{booking.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {booking.contact_name} · {booking.assigned_to}
-                        </p>
-                      </TableCell>
-                      <TableCell className="pr-4">
-                        <div className="flex flex-wrap gap-1.5">
-                          <StatusBadge status={booking.status!} />
-                          <BookedViaBadge bookedVia={booking.booked_via!} />
-                        </div>
-                      </TableCell>
+      <div className="grid gap-8 2xl:grid-cols-3 2xl:gap-6">
+        <section className="2xl:col-span-2">
+          <SectionLabel>Today</SectionLabel>
+          <Card>
+            <CardHeader>
+              <CardTitle>{user.isPlatformAdmin ? "Across all businesses" : "Your bookings"}</CardTitle>
+              <CardDescription>
+                {user.isPlatformAdmin
+                  ? "Appointments and job visits, in each business's local time."
+                  : "Appointments and visits for today, in local time."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-0">
+              {today.length === 0 ? (
+                <EmptyState
+                  icon={CalendarClock}
+                  title="Nothing booked today"
+                  description="Bookings for today will show up here as they come in."
+                />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="pl-4">Time</TableHead>
+                      <TableHead>Business</TableHead>
+                      <TableHead>Booking</TableHead>
+                      <TableHead className="pr-4">Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      </section>
+                  </TableHeader>
+                  <TableBody>
+                    {today.map((booking) => (
+                      <TableRow key={booking.id}>
+                        <TableCell className="pl-4 whitespace-nowrap tabular-nums">
+                          {formatTime(booking.scheduled_start!, booking.org.timezone)}
+                        </TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/businesses/${booking.org.slug}`}
+                            className="font-medium hover:underline"
+                          >
+                            {booking.org.name}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          <p>{booking.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {booking.contact_name} · {booking.assigned_to}
+                          </p>
+                        </TableCell>
+                        <TableCell className="pr-4">
+                          <div className="flex flex-wrap gap-1.5">
+                            <StatusBadge status={booking.status!} />
+                            <BookedViaBadge bookedVia={booking.booked_via!} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+
+        <section>
+          <SectionLabel>Latest calls</SectionLabel>
+          <Card className="gap-0 pb-0">
+            <CardHeader className="pb-3">
+              <CardTitle>Answered by the AI receptionist</CardTitle>
+              <CardDescription>The most recent calls, newest first.</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0">
+              <LatestCalls calls={latestCalls} now={now} />
+            </CardContent>
+          </Card>
+        </section>
+      </div>
 
       <section>
         <SectionLabel>AI receptionist</SectionLabel>
@@ -236,7 +282,10 @@ function OverviewSkeleton() {
           <Skeleton key={i} className="h-28 rounded-xl" />
         ))}
       </div>
-      <Skeleton className="h-80 rounded-xl" />
+      <div className="grid gap-6 2xl:grid-cols-3">
+        <Skeleton className="h-96 rounded-xl 2xl:col-span-2" />
+        <Skeleton className="h-96 rounded-xl" />
+      </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <Skeleton className="h-72 rounded-xl" />
         <Skeleton className="h-72 rounded-xl" />

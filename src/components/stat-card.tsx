@@ -24,7 +24,7 @@ export function StatCard({
     <Card>
       <CardContent>
         <p className="text-sm text-muted-foreground">{label}</p>
-        <div className="mt-1 flex items-end justify-between gap-3">
+        <div className="mt-1 flex items-end gap-4">
           <p className="text-3xl font-semibold tracking-tight tabular-nums">{value}</p>
           {trend && <Sparkline values={trend.daily} className="mb-1 shrink-0" />}
         </div>

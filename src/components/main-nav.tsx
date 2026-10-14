@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, LayoutDashboard } from "lucide-react";
+import { Building2, LayoutDashboard, Network } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/businesses", label: "Businesses", icon: Building2 },
+  { href: "/how-its-built", label: "How it's built", icon: Network },
 ];
 
 // Reads the URL to highlight the active link, so it renders behind a

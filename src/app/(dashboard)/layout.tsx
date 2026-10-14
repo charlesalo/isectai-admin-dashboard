@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { MainNav } from "@/components/main-nav";
+import { MainNav, NavLinks } from "@/components/main-nav";
 import { UserMenu } from "@/components/user-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -23,14 +23,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="px-2.5">
           <Brand />
         </div>
-        <MainNav className="flex-col" />
+        <Suspense fallback={<NavLinks className="flex-col" />}>
+          <MainNav className="flex-col" />
+        </Suspense>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 items-center justify-between gap-4 border-b px-4 md:px-8">
           <div className="flex items-center gap-4 md:hidden">
             <Brand />
           </div>
-          <MainNav className="hidden sm:flex md:hidden" />
+          <Suspense fallback={<NavLinks className="hidden sm:flex md:hidden" />}>
+            <MainNav className="hidden sm:flex md:hidden" />
+          </Suspense>
           <div className="ml-auto">
             {/* Reads the session, so it streams in behind its own boundary. */}
             <Suspense fallback={<Skeleton className="h-8 w-56" />}>

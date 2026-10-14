@@ -10,13 +10,17 @@ const links = [
   { href: "/businesses", label: "Businesses", icon: Building2 },
 ];
 
+// Reads the URL to highlight the active link, so it renders behind a
+// <Suspense> boundary with NavLinks (no highlight) as the fallback.
 export function MainNav({ className }: { className?: string }) {
-  const pathname = usePathname();
+  return <NavLinks className={className} pathname={usePathname()} />;
+}
 
+export function NavLinks({ className, pathname }: { className?: string; pathname?: string }) {
   return (
     <nav className={cn("flex gap-1", className)}>
       {links.map(({ href, label, icon: Icon }) => {
-        const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+        const active = href === "/" ? pathname === "/" : Boolean(pathname?.startsWith(href));
         return (
           <Link
             key={href}

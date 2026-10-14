@@ -93,3 +93,9 @@ const sourceLabels: Record<string, string> = { retell: "Retell", n8n: "n8n", man
 export function SourceBadge({ source }: { source: string }) {
   return <ToneBadge tone={sourceTones[source] ?? "gray"}>{sourceLabels[source] ?? source}</ToneBadge>;
 }
+
+const priorityTones: Record<string, Tone> = { urgent: "red", normal: "gray", low: "gray" };
+
+export function PriorityBadge({ priority }: { priority: string }) {
+  return <ToneBadge tone={priorityTones[priority] ?? "gray"}>{humanize(priority)}</ToneBadge>;
+}

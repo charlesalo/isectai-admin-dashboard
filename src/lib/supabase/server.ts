@@ -1,11 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "@/types/database";
 
 // Supabase client for Server Components and Server Actions. It uses the
 // publishable key and the signed-in user's session cookie, so every query
 // runs as that user and RLS decides which rows come back.
 export async function createClient() {
+  // Supabase data is per user and per request, so it must never be
+  // prerendered. This also covers auth-js reading the clock to check expiry.
+  await connection();
   const cookieStore = await cookies();
 
   return createServerClient<Database>(

@@ -74,11 +74,28 @@ These are recorded because they show where AI output needed correction.
 - **Clinic staff can sign in to the admin app.** This was kept for the isolation demo. ARCHITECTURE.md notes that production should use a separate customer app.
 - **The commit plan was followed instead of a single "Phase 0" commit,** because CLAUDE.md requires Conventional Commits.
 
-## Reviewer notes
+## My review
 
-_To be completed by hand. Record what you read, changed or questioned in Claude Code's output, for example:_
+**Setting the direction.** I wrote `CLAUDE.md` and `PLAN.md` before any code was generated. They set the schema design, the security rules and the commit plan, so Claude Code worked inside rules I chose rather than inventing the architecture.
 
-- [ ] Read every migration in `supabase/migrations/`, especially the RLS policies and composite foreign keys
-- [ ] Ran the isolation demo myself
-- [ ] Changes made by hand:
-- [ ] Things I would do differently:
+**Reviewing each phase.** Claude Code stopped at the end of every phase. I read its summary, the check results and the decisions it flagged before starting the next phase.
+
+**What I read in the code.** I read the migrations that carry the security model:
+- the RLS policies
+- the medical tables with their composite foreign keys
+- the security invoker views
+
+I skimmed the rest.
+
+**What I tested myself.** I ran the isolation demo: signed in as the platform admin, then as Brightside staff, and confirmed the staff account only sees Brightside and gets "Business not found" for another clinic's page.
+
+**Decisions I made during deployment:**
+- Created a dedicated Supabase project in a US East region, close to Vercel's default region.
+- Turned off "automatically expose new tables", so access only comes from the grants in the migrations.
+- Reviewed the migration plan before it was applied to the hosted database.
+- Set up the Vercel project and its environment variables.
+- Kept the demo password out of the repository.
+
+**Changes made by hand.** None to the code. My input was the rules, the plan, reviewing at each phase stop, and the deployment decisions above.
+
+**What I would do next.** Add write paths. The prototype is read-only, so the next step is letting clinic staff update their own bookings, with insert and update policies scoped by their role in `organization_members` (owner, admin, staff), and pgTAP tests proving one clinic still can't write to another's data.

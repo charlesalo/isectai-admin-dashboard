@@ -12,7 +12,7 @@ const demoEnabled = Boolean(process.env.DEMO_USER_PASSWORD);
 
 export default function LoginPage() {
   return (
-    <main className="flex flex-1 items-center justify-center bg-muted/40 px-4 py-16">
+    <main className="flex flex-1 items-center justify-center bg-[radial-gradient(60rem_28rem_at_50%_-8rem,color-mix(in_oklch,var(--primary)_14%,transparent),transparent)] px-4 py-16">
       <div className="w-full max-w-md">
         <div className="mb-6 flex items-center justify-center gap-2">
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground">

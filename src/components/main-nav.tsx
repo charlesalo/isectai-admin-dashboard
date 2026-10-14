@@ -32,11 +32,15 @@ export function NavLinks({ className, compact, pathname }: NavProps & { pathname
             aria-current={active ? "page" : undefined}
             aria-label={label}
             className={cn(
-              "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-              active && "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary",
+              "relative flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground",
+              // Active: a white pill, plus an accent bar on the sidebar's edge (not in the compact header nav).
+              active && "bg-card text-foreground shadow-xs ring-1 ring-foreground/10 hover:bg-card",
+              active &&
+                !compact &&
+                "before:absolute before:inset-y-1.5 before:-left-3 before:w-[3px] before:rounded-r-full before:bg-primary",
             )}
           >
-            <Icon className="size-4" />
+            <Icon className={cn("size-4", active && "text-primary")} />
             <span className={cn(compact && "hidden sm:inline")}>{label}</span>
           </Link>
         );

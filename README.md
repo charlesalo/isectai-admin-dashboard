@@ -55,6 +55,8 @@ Open http://localhost:3000.
 
 Both users get the password you set in `DEMO_USER_PASSWORD`.
 
+When `DEMO_USER_PASSWORD` is set where the app runs, the login page also shows one-click **Explore as iSectAI admin** and **Explore as Brightside staff** buttons. They sign in on the server with that password, which never reaches the browser. On Vercel it's a server-only environment variable (no `NEXT_PUBLIC_` prefix). Leave it unset in a real deployment and only the password form appears.
+
 | Email | Role | Sees |
 |---|---|---|
 | `admin@isectai.test` | Platform admin (iSectAI staff) | All three businesses |

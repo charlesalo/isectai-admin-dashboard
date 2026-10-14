@@ -10,8 +10,9 @@ function Brand() {
       <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
         iS
       </span>
-      <span className="font-semibold tracking-tight">iSectAI</span>
-      <span className="text-xs text-muted-foreground">Admin</span>
+      {/* Icon only on phones so the header nav fits. */}
+      <span className="hidden font-semibold tracking-tight sm:inline">iSectAI</span>
+      <span className="hidden text-xs text-muted-foreground sm:inline">Admin</span>
     </Link>
   );
 }
@@ -29,15 +30,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 items-center justify-between gap-4 border-b px-4 md:px-8">
-          <div className="flex items-center gap-4 md:hidden">
+          {/* Below md the sidebar is hidden, so the nav moves into the header. */}
+          <div className="flex items-center gap-3 md:hidden">
             <Brand />
+            <Suspense fallback={<NavLinks compact />}>
+              <MainNav compact />
+            </Suspense>
           </div>
-          <Suspense fallback={<NavLinks className="hidden sm:flex md:hidden" />}>
-            <MainNav className="hidden sm:flex md:hidden" />
-          </Suspense>
           <div className="ml-auto">
             {/* Reads the session, so it streams in behind its own boundary. */}
-            <Suspense fallback={<Skeleton className="h-8 w-56" />}>
+            <Suspense fallback={<Skeleton className="h-8 w-28 sm:w-56" />}>
               <UserMenu />
             </Suspense>
           </div>

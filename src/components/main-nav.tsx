@@ -12,11 +12,14 @@ const links = [
 
 // Reads the URL to highlight the active link, so it renders behind a
 // <Suspense> boundary with NavLinks (no highlight) as the fallback.
-export function MainNav({ className }: { className?: string }) {
-  return <NavLinks className={className} pathname={usePathname()} />;
+type NavProps = { className?: string; compact?: boolean };
+
+export function MainNav(props: NavProps) {
+  return <NavLinks {...props} pathname={usePathname()} />;
 }
 
-export function NavLinks({ className, pathname }: { className?: string; pathname?: string }) {
+// compact: icon only on phones, for the header nav.
+export function NavLinks({ className, compact, pathname }: NavProps & { pathname?: string }) {
   return (
     <nav className={cn("flex gap-1", className)}>
       {links.map(({ href, label, icon: Icon }) => {
@@ -26,13 +29,14 @@ export function NavLinks({ className, pathname }: { className?: string; pathname
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
+            aria-label={label}
             className={cn(
               "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
               active && "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary",
             )}
           >
             <Icon className="size-4" />
-            {label}
+            <span className={cn(compact && "hidden sm:inline")}>{label}</span>
           </Link>
         );
       })}

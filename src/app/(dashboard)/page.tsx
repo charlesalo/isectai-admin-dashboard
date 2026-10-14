@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPercent, formatTime, localDateKey } from "@/lib/format";
+import { getCurrentUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export default function OverviewPage() {
@@ -31,6 +32,7 @@ export default function OverviewPage() {
 
 async function Overview() {
   const supabase = await createClient();
+  const user = await getCurrentUser();
   const now = new Date();
   const day = 24 * 60 * 60 * 1000;
 
@@ -95,8 +97,12 @@ async function Overview() {
       <div className="grid gap-6 2xl:grid-cols-3">
         <Card className="2xl:col-span-2">
           <CardHeader>
-            <CardTitle>Today across all businesses</CardTitle>
-            <CardDescription>Appointments and job visits, in each business&apos;s local time.</CardDescription>
+            <CardTitle>{user.isPlatformAdmin ? "Today across all businesses" : "Today"}</CardTitle>
+            <CardDescription>
+              {user.isPlatformAdmin
+                ? "Appointments and job visits, in each business's local time."
+                : "Your bookings for today, in local time."}
+            </CardDescription>
           </CardHeader>
           <CardContent className="px-0">
             {today.length === 0 ? (
